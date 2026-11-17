@@ -1,21 +1,29 @@
-# Sottocosto Oggi — Publisher
+# Sottocosto Oggi — Dashboard privata
 
-Interfaccia statica sperimentale per anteprime di offerte Amazon. **Non usare questa pagina per pubblicare direttamente su Telegram.**
+Dashboard responsive in sola lettura: stato dei cicli, ultime pubblicazioni,
+punteggi e invii da riconciliare. I dati arrivano esclusivamente da `/api/status`
+sulla stessa origine. Nessun token, AI, proxy di terzi o pubblicazione dal browser.
 
-## Avviso di sicurezza (2026-11)
+Il backend è `dashboard.py` nella PR #1 di `sottocosto-oggi-bot`.
+Servire questo checkout come DASHBOARD_DIR tramite quel backend, dietro HTTPS,
+con credenziali dedicate impostate sul server. Non inserire password o chiavi
+nei file statici. GitHub Pages da solo non può fornire i dati privati.
+Vedere `OPERATIONS.md` nel bot per ambiente, database, proxy e attivazione.
 
-Una versione precedente di `index.html` conteneva un token Telegram bot nel codice JavaScript pubblico. Il token **deve essere revocato e rigenerato tramite @BotFather**; rimuoverlo dal branch corrente non lo elimina dalla cronologia Git né ne impedisce l'utilizzo.
+La pubblicazione manuale apre il workflow GitHub protetto dall'ambiente
+`telegram-publishing`, con input verificati dall'operatore. La dashboard non ha
+endpoint di scrittura. I prezzi mostrati risalgono al momento della pubblicazione;
+il punteggio non garantisce un minimo storico del mercato.
 
-1. Aprire @BotFather su Telegram e revocare il token del bot interessato.
-2. Creare un nuovo token e salvarlo esclusivamente in GitHub Actions Secrets o in un gestore segreti server-side.
-3. Verificare i permessi del bot nel canale e le pubblicazioni non autorizzate.
-4. Non mettere token, chiavi Anthropic o credenziali Amazon nel JavaScript servito al browser.
+## Credenziale Telegram compromessa
 
-## Architettura consigliata
+Il token della precedente versione pubblica deve essere revocato tramite
+BotFather e sostituito nei Secrets. La rimozione dal codice non revoca il token
+né lo elimina dalla cronologia Git. Controllare anche gli accessi al canale.
 
-- Frontend pubblico: anteprima e ricerca senza credenziali.
-- Backend autenticato: validazione dati prodotto, autorizzazione operatore, chiamate Telegram e gestione segreti.
-- Bot automatico: repository separato `sottocosto-oggi-bot` con credenziali in GitHub Secrets.
-- Prezzi: usare dati verificabili da API autorizzate; non trattare risultati generati da AI come prezzi certificati.
+## Verifica
 
-**Stato:** pubblicazione diretta dal frontend disabilitata fino all'implementazione di un backend autenticato. La parte di ricerca Claude via browser/proxy è legacy e non deve ricevere chiavi API.
+`node --check dashboard.js` verifica la sintassi. I test del backend nella PR del
+bot controllano autenticazione, HTTPS, metodi vietati e mancata esposizione di
+errori interni. Le stringhe dei prodotti vengono inserite solo con textContent;
+nessun HTML proveniente dai dati viene interpretato.
