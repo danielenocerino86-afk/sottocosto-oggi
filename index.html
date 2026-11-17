@@ -299,7 +299,7 @@ header { display: flex; align-items: center; gap: 16px; margin-bottom: 36px; pad
 <div class="toast" id="toast"></div>
 
 <script>
-const BOT_TOKEN = '8500463671:AAEH4c4QQp6fqaaxg1yiMJkBFuBIpN6eix0';
+const BOT_TOKEN = ''; // Security: never embed Telegram credentials in public client code.
 const CHANNEL   = '@sottocosto_oggi';
 const TAG       = 'offertepora0e-21';
 
@@ -356,7 +356,8 @@ function buildMessage(data) {
 }
 
 function buildTgUrl(msg) {
-  return `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${encodeURIComponent(CHANNEL)}&parse_mode=HTML&text=${encodeURIComponent(msg)}`;
+  // Publishing must be implemented through an authenticated server-side endpoint.
+  return null;
 }
 
 function showToast(msg, type='success') {
@@ -420,16 +421,8 @@ async function callClaude(prompt) {
 }
 
 async function sendTg(url) {
-  try {
-    const r = await fetch(url);
-    const j = await r.json();
-    if (j.ok) { showToast('Pubblicato su @sottocosto_oggi!'); return true; }
-    throw new Error(j.description||'Errore Telegram');
-  } catch(e) {
-    window.open(url,'_blank');
-    showToast('Apri il link nel browser e premi Invio');
-    return false;
-  }
+  showToast('Pubblicazione disabilitata per sicurezza: configurare un backend autenticato.', 'error');
+  return false;
 }
 
 function loadImg(asin, imgEl, phEl) {
